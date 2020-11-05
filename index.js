@@ -102,7 +102,14 @@ class Walker extends EE {
     }
     const rules = data.split(/\r?\n/)
       .filter(line => !/^#|^$/.test(line.trim()))
-      .map(r => new Minimatch(r, mmopt))
+      .map(r => {
+        // if this is an excluded dir (i.e !dist/) append '*' to the rule
+        // since it makes no sense to exclude only the directory
+        if (r[0] === '!' && r[r.length-1] === '/') {
+          r +='*'
+        }
+        return new Minimatch(r, mmopt)
+      })
 
     this.ignoreRules[file] = rules
 
